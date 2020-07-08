@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.core.dao.MemberDao">
+    <!-- 查询会员列表  -->
+    <select id="selectMemberList" parameterType="member"
+            resultType="member">
+        SELECT
+        *
+        FROM
+        member
+        <!-- 执行分页查询 -->
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <!-- 多字段查询会员列表  -->
+    <select id="selectMemberListBy" parameterType="String"
+            resultType="member">
+        SELECT *
+        FROM
+            member
+        where
+                member_code = #{member_code}
+                or member_name = #{member_code}
+                or member_phone = #{member_code}
+                or member_email = #{member_code}
+    </select>
+
+    <!-- 查询客户总数 -->
+    <select id="selectMemberListCount" parameterType="member"
+            resultType="Integer">
+        select count(*) from member
+    </select>
+
+    <!-- 条件查询客户总数 -->
+    <select id="selectMemberListByCount" parameterType="String"
+            resultType="Integer">
+        select count(*) from member where
+                member_code = #{member_code}
+                or member_name = #{member_code}
+                or member_phone = #{member_code}
+                or member_email = #{member_code}
+    </select>
+
+    <!-- 添加客户 -->
+    <insert id="createMember" parameterType="member">
+	    insert into member(
+                member_code,
+                member_name,
+                member_password,
+                member_gender,
+                member_create_code,
+                member_status,
+                member_email,
+                member_phone,
+                member_address,
+                member_createtime
+	             )
+	             values(#{member_code},
+	                    #{member_name},
+                        #{member_password},
+                        #{member_gender},
+	                    #{member_create_code},
+	                    #{member_status},
+	                    #{member_email},
+	                    #{member_phone},
+	                    #{member_address},
+	                    #{member_createtime}
+	            )
+	</insert>
+    <!-- 根据code获取客户信息 -->
+    <select id="getMemberByCode" parameterType="Integer"
+            resultType="member">
+	    select * from member where member_code = #{member_code}
+	</select>
+    <!-- 根据id获取客户信息 -->
+    <select id="getMemberById" parameterType="Integer"
+            resultType="member">
+	    select * from member where id = #{id}
+	</select>
+    <!-- 更新客户 -->
+    <update id="updateMember" parameterType="member">
+        update member
+        <set>
+            <if test="member_code!=null">
+                member_code=#{member_code},
+            </if>
+            <if test="member_name!=null">
+                member_name=#{member_name},
+            </if>
+            <if test="member_password!=null">
+                member_password=#{member_password},
+            </if>
+            <if test="member_gender!=null">
+                member_gender=#{member_gender},
+            </if>
+            <if test="member_create_code!=null">
+                member_create_code=#{member_create_code},
+            </if>
+            <if test="member_status!=null">
+                member_status=#{member_status},
+            </if>
+            <if test="member_email!=null">
+                member_email=#{member_email},
+            </if>
+            <if test="member_phone!=null">
+                member_phone=#{member_phone},
+            </if>
+            <if test="member_address!=null">
+                member_address=#{member_address},
+            </if>
+            <if test="member_createtime!=null">
+                member_createtime=#{member_createtime},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!-- 删除客户 -->
+    <delete id="deleteMember" parameterType="Integer">
+	    delete from member where id=#{id}
+	</delete>
+    <!-- 添加图片 -->
+    <update id="addPhoto" parameterType="member">
+        update member
+        <set>
+            <if test="member_photo_name!=null">
+                member_photo_name=#{member_photo_name},
+            </if>
+            <if test="member_photo_path!=null">
+                member_photo_path=#{member_photo_path},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--查找图片位置-->
+    <select id="searchPhotoPath" parameterType="String">
+        select member_photo_path
+        from member
+        where member_photo_name=#{member_photo_name}
+    </select>
+    <!-- 修改状态 -->
+    <delete id="changeMemberStatus" parameterType="Integer">
+        update member set member_status = (case
+            when member_status=0 then 1
+            when member_status=1 then 0
+            end)where id=#{id};
+	</delete>
+
+    <!--批量删除 -->
+    <delete id="batchDeletes" parameterType="java.util.List">
+        DELETE FROM member where id in
+            <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+</mapper>

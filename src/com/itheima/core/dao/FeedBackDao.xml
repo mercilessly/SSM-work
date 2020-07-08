@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.core.dao.FeedBackDao">
+    <!-- 查询反馈列表  -->
+    <select id="selectFeedBackList" parameterType="feedBack"
+            resultType="feedBack">
+        SELECT
+        *
+        FROM
+        feedback
+        <!-- 执行分页查询 -->
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <!-- 多字段查询反馈列表  -->
+    <select id="selectFeedBackListBy" parameterType="String"
+            resultType="feedBack">
+        SELECT *
+        FROM
+            feedback
+        where
+                member_code = #{feedback_code}
+                or name = #{feedback_code}
+                or phone = #{feedback_code}
+                or email = #{feedback_code}
+    </select>
+
+    <!-- 查询反馈总数 -->
+    <select id="selectFeedBackListCount" parameterType="feedBack"
+            resultType="Integer">
+        select count(*) from feedback
+    </select>
+
+    <!-- 条件查询反馈总数 -->
+    <select id="selectFeedBackListByCount" parameterType="String"
+            resultType="Integer">
+        select count(*) from feedback where
+                member_code = #{feedback_code}
+                or name = #{feedback_code}
+                or phone = #{feedback_code}
+                or email = #{feedback_code}
+    </select>
+    <!--未读总数-->
+    <select id="selectStatusCount" resultType="Integer">
+        select count(*) from feedback where
+        status = 1
+    </select>
+    <!--未读反馈列表-->
+    <select id="getFeedBackByStatusList"  parameterType="feedBack"
+            resultType="feedBack">
+        SELECT *
+        FROM
+            feedback
+        where status = 1
+        <!-- 执行分页查询 -->
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <!-- 根据code获取反馈信息 -->
+    <select id="getFeedBackByCode" parameterType="Integer"
+            resultType="feedBack">
+	    select * from feedback where member_code = #{feedback_code}
+	</select>
+    <!-- 根据id获取反馈信息 -->
+    <select id="getFeedBackById" parameterType="Integer"
+            resultType="feedBack">
+	    select * from feedback where id = #{id}
+	</select>
+    <!-- 删除反馈 -->
+    <delete id="deleteFeedBack" parameterType="Integer">
+	    delete from feedback where id=#{id}
+	</delete>
+    <!-- 修改状态 -->
+    <delete id="changeFeedBackStatus" parameterType="Integer">
+        update feedback set status = (case
+            when status=0 then 1
+            when status=1 then 0
+            end)where id=#{id};
+	</delete>
+    <!--批量删除 -->
+    <delete id="batchDeletes" parameterType="java.util.List">
+        DELETE FROM feedback where id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--提交反馈 -->
+    <insert id="sendFeedBack" parameterType="feedBack">
+        insert into feedback(
+                member_code,
+                name,
+                email,
+                phone,
+                text,
+                status
+	             )
+	             values(#{member_code},
+	                    #{name},
+                        #{email},
+                        #{phone},
+	                    #{text},
+	                    #{status}
+	            )
+    </insert>
+</mapper>

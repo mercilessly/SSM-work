@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.core.dao.PhotoDao">
+    <select id="getPhotoByPage" parameterType="String"
+            resultType="photo">
+        select * from tupian where page=#{page}
+    </select>
+
+    <!-- 查询图片列表  -->
+    <select id="selectPhotoList" parameterType="photo"
+            resultType="photo">
+        SELECT
+        *
+        FROM
+        tupian
+        <!-- 执行分页查询 -->
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <!-- 查询图片总数 -->
+    <select id="selectPhotoListCount" parameterType="photo"
+            resultType="Integer">
+        select count(*) from tupian
+    </select>
+
+    <!-- 根据id获取图片信息 -->
+    <select id="getPhotoById" parameterType="Integer"
+            resultType="photo">
+	    select * from tupian where id = #{id}
+	</select>
+    <!-- 更新图片 -->
+    <update id="updatePhoto" parameterType="photo">
+        update tupian
+        <set>
+            <if test="name!=null">
+                name=#{name},
+            </if>
+            <if test="page!=null">
+                page=#{page},
+            </if>
+            <if test="type!=null">
+                type=#{type},
+            </if>
+            <if test="text!=null">
+                text=#{text},
+            </if>
+            <if test="photo_path!=null">
+                photo_path=#{photo_path},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itheima.core.dao.AdminDao">
+    <!-- 查询管理员列表  -->
+    <select id="selectAdminList" parameterType="user"
+            resultType="user">
+        SELECT
+        *
+        FROM
+        sys_user
+        <!-- 执行分页查询 -->
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <!-- 多字段查询管理员列表  -->
+    <select id="selectAdminListBy" parameterType="String"
+            resultType="user">
+        SELECT *
+        FROM
+            sys_user
+        where
+                user_code = #{user_code}
+                or user_name = #{user_code}
+    </select>
+
+    <!-- 查询管理员总数 -->
+    <select id="selectAdminListCount" parameterType="user"
+            resultType="Integer">
+        select count(*) from sys_user
+    </select>
+
+    <!-- 条件查询管理员总数 -->
+    <select id="selectAdminListByCount" parameterType="String"
+            resultType="Integer">
+        select count(*) from sys_user where
+                user_code = #{user_code}
+                or user_name = #{user_code}
+    </select>
+
+    <!-- 添加管理员 -->
+    <insert id="createAdmin" parameterType="user">
+	    insert into sys_user(
+                user_code,
+                user_name,
+                user_password,
+                user_state,
+                user_power
+	             )
+	             values(#{user_code},
+	                    #{user_name},
+                        #{user_password},
+                        #{user_state},
+	                    #{user_power}
+	            )
+	</insert>
+    <!-- 根据code获取管理员信息 -->
+    <select id="getAdminByCode" parameterType="Integer"
+            resultType="user">
+	    select * from sys_user where user_code = #{user_code}
+	</select>
+    <!-- 根据id获取管理员信息 -->
+    <select id="getAdminById" parameterType="Integer"
+            resultType="user">
+	    select * from sys_user where user_id = #{user_id}
+	</select>
+    <!-- 更新管理员 -->
+    <update id="updateAdmin" parameterType="user">
+        update sys_user
+        <set>
+            <if test="user_code!=null">
+                user_code=#{user_code},
+            </if>
+            <if test="user_name!=null">
+                user_name=#{user_name},
+            </if>
+            <if test="user_password!=null">
+                user_password=#{user_password},
+            </if>
+            <if test="user_power!=null">
+                user_power=#{user_power},
+            </if>
+        </set>
+        where user_id=#{user_id}
+    </update>
+    <!-- 删除管理员 -->
+    <delete id="deleteAdmin" parameterType="Integer">
+	    delete from sys_user where user_id=#{user_id}
+	</delete>
+    <!-- 修改状态 -->
+    <delete id="changeAdminState" parameterType="Integer">
+        update sys_user set user_state = (case
+            when user_state=0 then 1
+            when user_state=1 then 0
+            end)where user_id=#{user_id};
+	</delete>
+
+    <!--批量删除 -->
+    <delete id="batchDeletes" parameterType="java.util.List">
+        DELETE FROM sys_user where user_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>
